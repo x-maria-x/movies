@@ -1,0 +1,40 @@
+.movieTitle {
+  font-size: 20px;
+  margin: 0;
+}
+
+.ant-tag {
+  color: #000000a6;
+}
+
+.voteAverage {
+  border: 2px solid #e9d100;
+  border-radius: 50%;
+  font-size: 12px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.movie_overview {
+  font-size: 12px;
+}
+
+.rate {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.rate li {
+  flex-shrink: 3;
+  font-size: 17px;
+}
+
+.moviesDate {
+  color: #827e7e;
+  font-size: 12px;
+  line-height: 22px;
+}
