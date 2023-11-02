@@ -30,7 +30,10 @@ export default class TmdbService {
       throw new Error(`Could not fetch ${url}, received ${res.status}`)
     }
     const moviesList = await res.json()
-
-    return moviesList.results.map((movie) => this.constructor.transformMovieData(movie))
+    return {
+      moviesData: moviesList.results.map((movie) => this.constructor.transformMovieData(movie)),
+      currentPage: moviesList.page,
+      totalResults: moviesList.total_results,
+    }
   }
 }

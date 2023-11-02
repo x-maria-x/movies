@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Tooltip } from 'antd'
+import { Input, Tooltip, Pagination, Flex } from 'antd'
 import { CloseOutlined } from '@ant-design/icons'
 import debounce from 'lodash.debounce'
 
@@ -14,37 +14,62 @@ export default class App extends Component {
     error: null,
     label: '',
     noResults: false,
+    currentPage: 1,
+    totalResults: null,
   }
 
   getMoviesList = debounce(() => {
-    this.setState({ isLoading: true, noResults: false })
+    if (this.state.label === '') {
+      this.setState({ isLoading: false })
+      return
+    }
+    this.setState({ noResults: false })
     const moviesService = new TmdbService()
-    const labelSearch = this.state.label
+    const { label, currentPage } = this.state
     moviesService
       .getMovies(
-        `https://api.themoviedb.org/3/search/movie?query=${labelSearch}&include_adult=false&language=en-US&page=1`
+        `https://api.themoviedb.org/3/search/movie?query=${label}&include_adult=false&language=en-US&page=${currentPage}`
       )
-      .then((moviesData) => {
-        if (moviesData.length === 0) {
-          this.setState({ isLoading: false, movies: moviesData, noResults: true })
-        } else this.setState({ isLoading: false, movies: moviesData, noResults: false })
+      .then((data) => {
+        if (data.moviesData.length === 0) {
+          this.setState({
+            isLoading: false,
+            movies: data.moviesData,
+            noResults: true,
+            currentPage: data.currentPage,
+            totalResults: data.totalResults,
+          })
+        } else
+          this.setState({
+            isLoading: false,
+            movies: data.moviesData,
+            noResults: false,
+            currentPage: data.currentPage,
+            totalResults: data.totalResults,
+          })
       })
       .catch((error) => {
         this.setState({ isLoading: false, error })
       })
-  }, 400)
+  }, 1500)
 
   onLabelChange = (event) => {
     const label = event.target.value
     if (label.trim() === '') {
       const input = event.target
       input.value = ''
-      input.placeholder = 'The request cannot be empty!'
+      this.setState({
+        label: '',
+        movies: [],
+      })
       return
     }
     this.setState({
       label: event.target.value,
+      isLoading: true,
       movies: [],
+      currentPage: 1,
+      totalResults: null,
     })
     this.getMoviesList()
   }
@@ -56,26 +81,45 @@ export default class App extends Component {
     })
   }
 
+  handlePageChange = (event) => {
+    this.setState({ currentPage: event, movies: [], isLoading: true })
+    this.getMoviesList()
+  }
+
   render() {
+    const { label, movies, error, isLoading, noResults, currentPage, totalResults } = this.state
     return (
       <section className="wrapper">
-        <Input
-          placeholder="Type to search..."
-          value={this.state.label}
-          onChange={this.onLabelChange}
-          suffix={
-            <Tooltip title="Clear the form">
-              <CloseOutlined onClick={this.clearForm} />
-            </Tooltip>
-          }
-        />
-        <Movies
-          movies={this.state.movies}
-          error={this.state.error}
-          isLoading={this.state.isLoading}
-          label={this.state.label}
-          noResults={this.state.noResults}
-        />
+        <Flex
+          vertical
+          align="center"
+          justify="space-between"
+          gap={32}
+          style={{
+            width: '100%',
+          }}
+        >
+          <Input
+            placeholder="Type to search..."
+            defaultValue={label}
+            onChange={this.onLabelChange}
+            suffix={
+              <Tooltip title="Clear the form">
+                <CloseOutlined onClick={this.clearForm} />
+              </Tooltip>
+            }
+          />
+          <Movies movies={movies} error={error} isLoading={isLoading} label={label} noResults={noResults} />
+          {movies.length > 0 && (
+            <Pagination
+              current={currentPage}
+              total={totalResults}
+              defaultPageSize={20}
+              onChange={this.handlePageChange}
+              showSizeChanger={false}
+            />
+          )}
+        </Flex>
       </section>
     )
   }
