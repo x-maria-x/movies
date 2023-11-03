@@ -9,6 +9,16 @@ body {
   background-color: white;
 }
 
+.ant-tabs {
+  display: block;
+  width: 100%;
+}
+
+.ant-tabs-nav {
+  width: 109px;
+  margin: 0 auto 32px auto !important;
+}
+
 @media (max-width: 420px) {
   .wrapper {
     width: 95%;

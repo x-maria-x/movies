@@ -95,7 +95,7 @@ function Movie({ movie }) {
   }
 
   const cardStyle = {
-    width: 451,
+    width: 463,
     height: 279,
   }
   const imgStyle = {
