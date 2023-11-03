@@ -17,13 +17,15 @@ export default function Movies({ isLoading, movies, error, noResults }) {
               <Spin size="large" />
             </Space>
           )}
-          {error && <Alert message={error.message} type="info" />}
-          {noResults ? <Alert message="Movies not found" type="info" /> : moviesList}
+          {error && (
+            <Alert message="An error occurred while processing your request. Repeat the request!" type="info" />
+          )}
+          {noResults ? <Alert message="Movies not found!" type="info" /> : moviesList}
         </section>
       </Online>
       <Offline>
         <section className="movies">
-          <Alert message="No Internet connection" type="info" />
+          <Alert message="No Internet connection!" type="info" />
         </section>
       </Offline>
     </>

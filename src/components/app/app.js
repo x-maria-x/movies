@@ -65,8 +65,10 @@ export default class App extends Component {
       return
     }
     this.setState({
-      label: event.target.value,
+      label,
       isLoading: true,
+      noResults: false,
+      error: null,
       movies: [],
       currentPage: 1,
       totalResults: null,
