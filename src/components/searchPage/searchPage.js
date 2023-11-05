@@ -18,7 +18,9 @@ export default class SearchPage extends Component {
     totalResults: null,
   }
 
-  getMoviesList = debounce(() => {
+  debounceGetMoviesList = debounce(this.getMoviesList, 1000)
+
+  getMoviesList() {
     if (this.state.label === '') {
       this.setState({ isLoading: false })
       return
@@ -27,9 +29,7 @@ export default class SearchPage extends Component {
     const moviesService = new TmdbService()
     const { label, currentPage } = this.state
     moviesService
-      .getMovies(
-        `https://api.themoviedb.org/3/search/movie?query=${label}&include_adult=false&language=en-US&page=${currentPage}`
-      )
+      .getMovies(label, currentPage)
       .then((data) => {
         if (data.moviesData.length === 0) {
           this.setState({
@@ -40,14 +40,13 @@ export default class SearchPage extends Component {
           this.setState({
             isLoading: false,
             movies: data.moviesData,
-            currentPage: data.currentPage,
             totalResults: data.totalResults,
           })
       })
       .catch((error) => {
         this.setState({ isLoading: false, error })
       })
-  }, 1500)
+  }
 
   onLabelChange = (event) => {
     const label = event.target.value
@@ -70,34 +69,37 @@ export default class SearchPage extends Component {
       currentPage: 1,
       totalResults: null,
     })
-    this.getMoviesList()
+    this.debounceGetMoviesList()
   }
 
   clearForm = () => {
     this.setState({
       label: '',
-      movies: [],
     })
   }
 
-  handlePageChange = (event) => {
-    this.setState({ currentPage: event, movies: [], isLoading: true })
+  handlePageChange = async (page) => {
+    await this.setState({ currentPage: page, movies: [], isLoading: true })
     this.getMoviesList()
   }
 
   render() {
     const { label, movies, error, isLoading, noResults, currentPage, totalResults } = this.state
+    const suffix = label ? (
+      <Tooltip title="Clear the form">
+        <CloseOutlined onClick={this.clearForm} />
+      </Tooltip>
+    ) : (
+      <span />
+    )
     return (
       <>
         <Input
+          name="input"
           placeholder="Type to search..."
-          defaultValue={label}
+          value={label}
           onChange={this.onLabelChange}
-          suffix={
-            <Tooltip title="Clear the form">
-              <CloseOutlined onClick={this.clearForm} />
-            </Tooltip>
-          }
+          suffix={suffix}
         />
         <Movies movies={movies} error={error} isLoading={isLoading} label={label} noResults={noResults} />
         {movies.length > 0 && (

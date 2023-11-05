@@ -3,85 +3,16 @@ import { Card, Flex, Typography, Space, Tag, Rate } from 'antd'
 
 import './movie.css'
 
-function Movie({ movie }) {
-  const genres = [
-    {
-      id: 28,
-      name: 'Action',
-    },
-    {
-      id: 12,
-      name: 'Adventure',
-    },
-    {
-      id: 16,
-      name: 'Animation',
-    },
-    {
-      id: 35,
-      name: 'Comedy',
-    },
-    {
-      id: 80,
-      name: 'Crime',
-    },
-    {
-      id: 99,
-      name: 'Documentary',
-    },
-    {
-      id: 18,
-      name: 'Drama',
-    },
-    {
-      id: 10751,
-      name: 'Family',
-    },
-    {
-      id: 14,
-      name: 'Fantasy',
-    },
-    {
-      id: 36,
-      name: 'History',
-    },
-    {
-      id: 27,
-      name: 'Horror',
-    },
-    {
-      id: 10402,
-      name: 'Music',
-    },
-    {
-      id: 9648,
-      name: 'Mystery',
-    },
-    {
-      id: 10749,
-      name: 'Romance',
-    },
-    {
-      id: 878,
-      name: 'Science Fiction',
-    },
-    {
-      id: 10770,
-      name: 'TV Movie',
-    },
-    {
-      id: 53,
-      name: 'Thriller',
-    },
-    {
-      id: 10752,
-      name: 'War',
-    },
-    {
-      id: 37,
-      name: 'Western',
-    },
-  ]
+function Movie({ movie, genres }) {
+  const cardStyle = {
+    width: 463,
+    height: 279,
+  }
+  const imgStyle = {
+    display: 'block',
+    width: 183,
+    height: 277,
+  }
 
   function getGenresList() {
     const movieGenres = genres.filter((genre) => movie.genre.includes(genre.id))
@@ -92,16 +23,6 @@ function Movie({ movie }) {
       </span>
     ))
     return genresList
-  }
-
-  const cardStyle = {
-    width: 463,
-    height: 279,
-  }
-  const imgStyle = {
-    display: 'block',
-    width: 183,
-    height: 277,
   }
 
   function shortenDescription(text, maxLength) {
@@ -118,6 +39,31 @@ function Movie({ movie }) {
     }
 
     return `${shortenedText}...`
+  }
+
+  function addRatingMovie(rating) {
+    let movieList = JSON.parse(localStorage.getItem('myMovies'))
+    if (!movieList) {
+      movieList = []
+    }
+    const movieData = { ...movie, myRating: rating }
+    const index = movieList.findIndex((movieItem) => movieItem.id === movieData.id)
+
+    if (index !== -1) {
+      movieList[index] = movieData
+    } else {
+      movieList.push(movieData)
+    }
+
+    window.localStorage.setItem('myMovies', JSON.stringify(movieList))
+  }
+
+  function estimationStyle() {
+    const rating = movie.estimation.toFixed(1)
+    if (rating < 3) return '#E90000'
+    if (rating < 5) return '#E97E00'
+    if (rating < 7) return '#E9D100'
+    return '#66E900'
   }
 
   return (
@@ -147,7 +93,9 @@ function Movie({ movie }) {
               }}
             >
               <h5 className="movieTitle">{movie.title}</h5>
-              <div className="voteAverage">{movie.estimation.toFixed(1)}</div>
+              <div className="voteAverage" style={{ border: `2px solid ${estimationStyle()}` }}>
+                {movie.estimation.toFixed(1)}
+              </div>
             </Flex>
             <Space
               style={{
@@ -167,7 +115,13 @@ function Movie({ movie }) {
             >
               <span className="movie_overview">{shortenDescription(movie.description, 200)}</span>
             </Typography.Title>
-            <Rate allowHalf count={10} defaultValue={2.5} className="rate" />
+            <Rate
+              allowHalf
+              count={10}
+              defaultValue={movie.myRating ? movie.myRating : 0}
+              onChange={(e) => addRatingMovie(e)}
+              className="rate"
+            />
           </Flex>
         </Flex>
       </Card>

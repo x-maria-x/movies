@@ -17,7 +17,7 @@ export default class TmdbService {
     }
   }
 
-  async getMovies(url) {
+  async getData(url, isMoviesData) {
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -29,11 +29,40 @@ export default class TmdbService {
     if (!res.ok) {
       throw new Error(`Could not fetch ${url}, received ${res.status}`)
     }
-    const moviesList = await res.json()
-    return {
-      moviesData: moviesList.results.map((movie) => this.constructor.transformMovieData(movie)),
-      currentPage: moviesList.page,
-      totalResults: moviesList.total_results,
+    const data = await res.json()
+    if (isMoviesData) {
+      return {
+        moviesData: data.results.map((movie) => this.constructor.transformMovieData(movie)),
+        totalResults: data.total_results,
+      }
     }
+    return data
+  }
+
+  getMovies(label, currentPage) {
+    return this.getData(
+      `https://api.themoviedb.org/3/search/movie?query=${label}&include_adult=false&language=en-US&page=${currentPage}`,
+      true
+    )
+  }
+
+  getGenriesList() {
+    return this.getData('https://api.themoviedb.org/3/genre/movie/list', false)
+  }
+
+  createGuestSession = async () => {
+    const res = await fetch('https://api.themoviedb.org/3/authentication/guest_session/new', {
+      method: 'GET',
+      headers: {
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkODg0M2UzZWFmYmY3MDQ4YjIxY2Q1NzRlZjMwMTc4NyIsInN1YiI6IjY1M2I5NjZiYmMyY2IzMDEwYjRhMTQ3NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.avlMEOIhHhed6Jild9WqS8d3cMGxnOlCHfjbsoqsPAQ',
+        accept: 'application/json',
+      },
+    })
+    if (!res.ok) {
+      throw new Error('Failed to create a guest session.')
+    }
+    const data = await res.json()
+    return data
   }
 }

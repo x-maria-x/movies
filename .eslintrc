@@ -60,7 +60,8 @@
           ],
           "newlines-between": "always"
         }
-      ]
+      ], 
+      "class-methods-use-this": "warn"
     },
     "settings": {
       "version": "detect",

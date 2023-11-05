@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Space, Spin, Alert } from 'antd'
 import { Offline, Online } from 'react-detect-offline'
 
+import { GenresList } from '../genresListContext/genresListContext'
 import Movie from '../movie/movie'
 import './movies.css'
 
 export default function Movies({ isLoading, movies, error, noResults }) {
-  const moviesList = movies.map((movie) => <Movie movie={movie} key={movie.id} />)
+  const genresObj = useContext(GenresList)
+
+  const { genres } = genresObj
+  const moviesList = movies.map((movie) => <Movie movie={movie} key={movie.id} genres={genres} />)
 
   return (
     <>
