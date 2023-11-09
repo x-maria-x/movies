@@ -1,22 +1,12 @@
 import React from 'react'
-import { Card, Flex, Typography, Space, Tag, Rate } from 'antd'
+import { Card, Flex, Typography, Space, Tag, Rate, Row, Col } from 'antd'
 
 import './movie.css'
 
 function Movie({ movie, genres }) {
-  const cardStyle = {
-    width: 463,
-    height: 279,
-  }
-  const imgStyle = {
-    display: 'block',
-    width: 183,
-    height: 277,
-  }
-
   function getGenresList() {
     const movieGenres = genres.filter((genre) => movie.genre.includes(genre.id))
-
+    if (movieGenres.length === 0) return <span>Genres not found</span>
     const genresList = movieGenres.map((genre) => (
       <span className="tag" key={genre.id}>
         <Tag>{genre.name}</Tag>
@@ -26,6 +16,7 @@ function Movie({ movie, genres }) {
   }
 
   function shortenDescription(text, maxLength) {
+    if (text.length === 0) return 'Movie description not found'
     if (text.length <= maxLength) {
       return text
     }
@@ -67,65 +58,74 @@ function Movie({ movie, genres }) {
   }
 
   return (
-    <section className="movie">
-      <Card
-        hoverable
-        style={cardStyle}
-        bodyStyle={{
-          padding: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <Flex justify="space-between">
-          <img alt="avatar" src={movie.poster} style={imgStyle} />
-          <Flex
-            vertical
-            align="flex-start"
-            justify="space-between"
-            style={{
-              padding: 10,
-            }}
-          >
+    <Card
+      className="movieCard"
+      hoverable
+      bodyStyle={{
+        padding: 0,
+        overflow: 'hidden',
+      }}
+    >
+      <Row>
+        <Col xs={{ span: 6 }} sm={10}>
+          <img alt="avatar" src={movie.poster} className="imgPoster" />
+        </Col>
+
+        <Col xs={{ span: 18, offset: 6 }} sm={{ span: 14, offset: 10 }} className="movieInfo">
+          <Flex className="movie-inform" vertical align="flex-start" justify="space-between">
             <Flex
               justify="space-between"
               style={{
                 width: '100%',
               }}
             >
-              <h5 className="movieTitle">{movie.title}</h5>
+              <Typography.Title
+                className="movieTitle"
+                level={4}
+                style={{
+                  margin: 0,
+                }}
+              >
+                {movie.title}
+              </Typography.Title>
+
               <div className="voteAverage" style={{ border: `2px solid ${estimationStyle()}` }}>
                 {movie.estimation.toFixed(1)}
               </div>
             </Flex>
             <Space
+              className="ganresList"
               style={{
                 flexWrap: 'wrap',
-                width: '246px',
               }}
             >
               {getGenresList()}
             </Space>
-            <div className="moviesDate">{movie.release}</div>
-            <Typography.Title
-              level={3}
-              style={{
-                lineHeight: 0.7,
-                margin: 0,
-              }}
-            >
-              <span className="movie_overview">{shortenDescription(movie.description, 200)}</span>
-            </Typography.Title>
-            <Rate
-              allowHalf
-              count={10}
-              defaultValue={movie.myRating ? movie.myRating : 0}
-              onChange={(e) => addRatingMovie(e)}
-              className="rate"
-            />
+            <div className="moviesDate">{movie.release ? movie.release : 'Release date not found'}</div>
           </Flex>
-        </Flex>
-      </Card>
-    </section>
+        </Col>
+      </Row>
+      <Row align="bottom">
+        <Col xs={24} sm={10} />
+        <Col xs={24} sm={14} style={{ padding: 10 }} className="description">
+          <Typography.Text
+            level={3}
+            style={{
+              margin: 0,
+            }}
+          >
+            <span className="movie_overview">{shortenDescription(movie.description, 130)}</span>
+          </Typography.Text>
+          <Rate
+            allowHalf
+            count={10}
+            defaultValue={movie.myRating ? movie.myRating : 0}
+            onChange={(e) => addRatingMovie(e)}
+            className="rate"
+          />
+        </Col>
+      </Row>
+    </Card>
   )
 }
 

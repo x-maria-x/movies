@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Pagination } from 'antd'
 
 import Movies from '../movies/movies'
+import './ratedPage.css'
 
 export default class RatedPage extends Component {
   state = {

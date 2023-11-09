@@ -36,12 +36,24 @@ export default class SearchPage extends Component {
             isLoading: false,
             noResults: true,
           })
-        } else
+        } else {
+          const moviesListRated = JSON.parse(localStorage.getItem('myMovies'))
+          const moviesData = data.moviesData.map((movie) => {
+            const ratedMovie = moviesListRated.find((m) => m.id === movie.id)
+            if (ratedMovie) {
+              return {
+                ...movie,
+                myRating: ratedMovie.myRating,
+              }
+            }
+            return movie
+          })
           this.setState({
             isLoading: false,
-            movies: data.moviesData,
+            movies: moviesData,
             totalResults: data.totalResults,
           })
+        }
       })
       .catch((error) => {
         this.setState({ isLoading: false, error })

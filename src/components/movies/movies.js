@@ -8,9 +8,12 @@ import './movies.css'
 
 export default function Movies({ isLoading, movies, error, noResults }) {
   const genresObj = useContext(GenresList)
-
   const { genres } = genresObj
-  const moviesList = movies.map((movie) => <Movie movie={movie} key={movie.id} genres={genres} />)
+
+  let moviesList = []
+  if (genres) {
+    moviesList = movies.map((movie) => <Movie movie={movie} key={movie.id} genres={genres} />)
+  }
 
   return (
     <>

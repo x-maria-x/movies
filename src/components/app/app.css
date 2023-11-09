@@ -3,7 +3,7 @@ body {
 }
 
 .wrapper {
-  width: 1010px;
+  max-width: 1010px;
   min-height: 100vh;
   margin: 0 auto;
   background-color: white;
@@ -17,10 +17,4 @@ body {
 .ant-tabs-nav {
   width: 109px;
   margin: 0 auto 32px auto !important;
-}
-
-@media (max-width: 420px) {
-  .wrapper {
-    width: 95%;
-  }
 }

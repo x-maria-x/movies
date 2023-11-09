@@ -1,0 +1,6 @@
+.ant-tabs-tabpane {
+  display: flex;
+  gap: 32px;
+  flex-direction: column;
+  align-items: center;
+}
