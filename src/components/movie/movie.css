@@ -1,5 +1,5 @@
 .movieCard {
-  max-width: 463px;
+  width: 463px;
   height: 280px;
 }
 
@@ -33,6 +33,10 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+}
+
+.genresList {
+  flex-wrap: wrap;
 }
 
 .movie_overview {
@@ -73,6 +77,7 @@
   .movieCard {
     height: 230px;
     flex-shrink: 1;
+    width: 90vw;
   }
   .imgPoster {
     padding: 10px;

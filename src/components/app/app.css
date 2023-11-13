@@ -9,6 +9,16 @@ body {
   background-color: white;
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  width: 95%;
+  margin: 0 auto;
+  align-items: center;
+}
+
 .ant-tabs {
   display: block;
   width: 100%;

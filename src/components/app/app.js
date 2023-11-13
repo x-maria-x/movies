@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Flex, Tabs } from 'antd'
+import { Tabs } from 'antd'
 
-import TmdbService from '../../services/tmdb-service'
+import moviesService from '../../services/tmdb-service'
 import SearchPage from '../searchPage'
 import { GenresList, GuestId } from '../genresListContext/genresListContext'
 import './app.css'
@@ -27,8 +27,6 @@ export default class App extends Component {
   ]
 
   componentDidMount() {
-    const moviesService = new TmdbService()
-
     moviesService.createGuestSession().then((res) => this.setState({ guestId: res.guest_session_id }))
     moviesService.getGenriesList().then((res) => this.setState({ genresList: res }))
   }
@@ -38,18 +36,9 @@ export default class App extends Component {
       <section className="wrapper">
         <GenresList.Provider value={this.state.genresList}>
           <GuestId.Provider value={this.state.guestId}>
-            <Flex
-              vertical
-              align="center"
-              justify="space-between"
-              gap={32}
-              style={{
-                width: '95%',
-                margin: '0 auto',
-              }}
-            >
+            <div className="app">
               <Tabs defaultActiveKey="1" items={this.tabsItems} destroyInactiveTabPane />
-            </Flex>
+            </div>
           </GuestId.Provider>
         </GenresList.Provider>
       </section>

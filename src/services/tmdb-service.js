@@ -2,9 +2,12 @@ import { format } from 'date-fns'
 
 import myImg from '../img/noimage.jpg'
 
-export default class TmdbService {
+class TmdbService {
+  authToken =
+    'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkODg0M2UzZWFmYmY3MDQ4YjIxY2Q1NzRlZjMwMTc4NyIsInN1YiI6IjY1M2I5NjZiYmMyY2IzMDEwYjRhMTQ3NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.avlMEOIhHhed6Jild9WqS8d3cMGxnOlCHfjbsoqsPAQ'
+
   static transformMovieData(movie) {
-    const date = movie.release_date ? format(new Date(movie.release_date), 'MMMM dd yyyy') : null
+    const date = movie.release_date ? format(new Date(movie.release_date), 'MMMM dd yyyy') : 'Release date not found'
     const img = movie.poster_path ? `https://image.tmdb.org/t/p/original${movie.poster_path}` : myImg
     return {
       id: movie.id,
@@ -17,45 +20,41 @@ export default class TmdbService {
     }
   }
 
-  async getData(url, isMoviesData) {
-    const res = await fetch(url, {
+  async getData(url) {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkODg0M2UzZWFmYmY3MDQ4YjIxY2Q1NzRlZjMwMTc4NyIsInN1YiI6IjY1M2I5NjZiYmMyY2IzMDEwYjRhMTQ3NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.avlMEOIhHhed6Jild9WqS8d3cMGxnOlCHfjbsoqsPAQ',
+        Authorization: this.authToken,
         accept: 'application/json',
       },
     })
-    if (!res.ok) {
-      throw new Error(`Could not fetch ${url}, received ${res.status}`)
+    if (!response.ok) {
+      throw new Error(`Could not fetch ${url}, received ${response.status}`)
     }
-    const data = await res.json()
-    if (isMoviesData) {
-      return {
-        moviesData: data.results.map((movie) => this.constructor.transformMovieData(movie)),
-        totalResults: data.total_results,
-      }
-    }
+    const data = await response.json()
     return data
   }
 
-  getMovies(label, currentPage) {
-    return this.getData(
-      `https://api.themoviedb.org/3/search/movie?query=${label}&include_adult=false&language=en-US&page=${currentPage}`,
-      true
+  async getMovies(label, currentPage) {
+    const data = await this.getData(
+      `https://api.themoviedb.org/3/search/movie?query=${label}&include_adult=false&language=en-US&page=${currentPage}`
     )
+    return {
+      moviesData: data.results.map((movie) => this.constructor.transformMovieData(movie)),
+      totalResults: data.total_results,
+    }
   }
 
-  getGenriesList() {
-    return this.getData('https://api.themoviedb.org/3/genre/movie/list', false)
+  async getGenriesList() {
+    const data = await this.getData('https://api.themoviedb.org/3/genre/movie/list')
+    return data
   }
 
-  createGuestSession = async () => {
+  async createGuestSession() {
     const res = await fetch('https://api.themoviedb.org/3/authentication/guest_session/new', {
       method: 'GET',
       headers: {
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkODg0M2UzZWFmYmY3MDQ4YjIxY2Q1NzRlZjMwMTc4NyIsInN1YiI6IjY1M2I5NjZiYmMyY2IzMDEwYjRhMTQ3NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.avlMEOIhHhed6Jild9WqS8d3cMGxnOlCHfjbsoqsPAQ',
+        Authorization: this.authToken,
         accept: 'application/json',
       },
     })
@@ -66,3 +65,7 @@ export default class TmdbService {
     return data
   }
 }
+
+const moviesService = new TmdbService()
+
+export default moviesService

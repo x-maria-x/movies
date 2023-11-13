@@ -17,9 +17,7 @@ function Movie({ movie, genres }) {
 
   function shortenDescription(text, maxLength) {
     if (text.length === 0) return 'Movie description not found'
-    if (text.length <= maxLength) {
-      return text
-    }
+    if (text.length <= maxLength) return text
 
     let shortenedText = text.slice(0, maxLength)
 
@@ -93,15 +91,8 @@ function Movie({ movie, genres }) {
                 {movie.estimation.toFixed(1)}
               </div>
             </Flex>
-            <Space
-              className="ganresList"
-              style={{
-                flexWrap: 'wrap',
-              }}
-            >
-              {getGenresList()}
-            </Space>
-            <div className="moviesDate">{movie.release ? movie.release : 'Release date not found'}</div>
+            <Space className="genresList">{getGenresList()}</Space>
+            <div className="moviesDate">{movie.release}</div>
           </Flex>
         </Col>
       </Row>
