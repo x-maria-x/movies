@@ -39,15 +39,11 @@ export default class SearchPage extends Component {
           })
           return
         }
-
         const moviesListRated = JSON.parse(localStorage.getItem('myMovies'))
         const moviesData = data.moviesData.map((movie) => {
-          const ratedMovie = moviesListRated.find((m) => m.id === movie.id)
-          if (ratedMovie) {
-            return {
-              ...movie,
-              myRating: ratedMovie.myRating,
-            }
+          if (moviesListRated) {
+            const ratedMovie = moviesListRated.find((m) => m.id === movie.id)
+            if (ratedMovie) return ratedMovie
           }
           return movie
         })
